@@ -227,6 +227,12 @@ COPY nginx.conf /usr/local/nginx/conf/nginx.conf
 
 WORKDIR /
 
+RUN apt-get update && apt-get install -y git
+
+RUN curl -SL "https://getcomposer.org/composer.phar" -o composer.phar
+RUN chmod +x composer.phar
+RUN mv composer.phar /usr/bin/composer
+
 RUN rm /usr/local/nginx/html/index.html
 RUN echo "<?php phpinfo(); ?>" >> /usr/local/nginx/html/index.php
 
