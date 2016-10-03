@@ -236,6 +236,28 @@ RUN mv composer.phar /usr/bin/composer
 RUN rm /usr/local/nginx/html/index.html
 RUN echo "<?php phpinfo(); ?>" >> /usr/local/nginx/html/index.php
 
+WORKDIR /
+
+RUN curl -SL "https://xdebug.org/files/xdebug-2.4.1.tgz" -o xdebug-2.4.1.tgz
+RUN tar -xvf xdebug-2.4.1.tgz
+
+WORKDIR /xdebug-2.4.1
+
+RUN phpize
+RUN ./configure
+RUN make
+
+RUN mkdir /usr/lib/php
+RUN mkdir /usr/lib/php/20151012
+RUN cp modules/xdebug.so /usr/lib/php/20151012/xdebug.so
+
+RUN echo "zend_extension=/usr/lib/php/20151012/xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_enable=\${XDEBUG_REMOTE_ENABLED}"  >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_autostart=\${XDEBUG_REMOTE_ENABLED}" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_host=\${XDEBUG_REMOTE_HOST}" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+WORKDIR /
+
 RUN mkdir /www
 RUN ln -s /usr/local/nginx/html/ www/public
 
